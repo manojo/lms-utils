@@ -1,0 +1,115 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionmapsome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 * 2
+val x3 = new OptionInt(x2,true)
+x3
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(6,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionmapnone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = new OptionInt(0,false)
+x1
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionflatmapsome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 * 2
+val x3 = new OptionInt(x2,true)
+x3
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(6,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionflatmapnone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = new OptionInt(0,false)
+x1
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionfiltersome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 == 3
+// TODO: use vars instead of tuples to return multiple values
+val (x5,x6) = if (x2) {
+(x0,true)
+} else {
+(0,false)
+}
+val x7 = new OptionInt(x5,x6)
+x7
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(3,true)
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionfilternone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = new OptionInt(0,false)
+x1
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = x0 == 3
+// TODO: use vars instead of tuples to return multiple values
+val (x5,x6) = if (x1) {
+(0,false)
+} else {
+(x0,true)
+}
+val x7 = new OptionInt(x5,x6)
+x7
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
