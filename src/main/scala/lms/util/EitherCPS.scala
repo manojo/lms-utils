@@ -26,6 +26,12 @@ import java.io.PrintWriter
      with ZeroVal {
 
   /**
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
+   */
+  implicit def eithercps_typ[A: Typ, B: Typ]: Typ[EitherCPS[A, B]]
+
+  /**
    * A CPS encoding of Either: Either is a construct that takes a value
    * of type A or B and eventually produces a value of type X
    * This implementation is not directly used here, but is wrapped inside
