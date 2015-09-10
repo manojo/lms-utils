@@ -1,7 +1,7 @@
 package lms.util
 
 import lms._
-import lms.testutil.FileDiffSuite
+import lms.testutil.FileDiffSpec
 
 import scala.lms.common._
 import scala.lms.internal.Effects
@@ -137,11 +137,11 @@ trait OptionProg
 //  }
 }
 
-class OptionOpsSuite extends FileDiffSuite {
+class OptionOpsSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testOption = {
+  def `OptionOps generate code with no diff` = {
     withOutFile(prefix + "option") {
       new OptionProg
           with OptionOpsExpOpt

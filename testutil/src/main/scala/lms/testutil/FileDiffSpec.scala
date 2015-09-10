@@ -2,21 +2,35 @@ package lms.testutil
 
 import lms._
 
-import java.io.{ PrintStream, File, FileInputStream, FileOutputStream, ByteArrayOutputStream }
+import java.io.{
+  PrintStream,
+  File,
+  FileInputStream,
+  FileOutputStream,
+  ByteArrayOutputStream
+}
+
 import org.scalatest._
 
-trait FileDiffSuite extends Suite {
+/**
+ * An addition to Spec that compares generated files
+ * @author Tiark Rompf
+ *
+ */
+trait FileDiffSpec extends Spec {
 
   def withOutFile(name: String)(func: => Unit): Unit = {
     val file = new File(name)
     file.getParentFile.mkdirs()
     withOutput(new PrintStream(new FileOutputStream(file)))(func)
   }
+
   def captureOutput(func: => Unit): String = {
     val bstream = new ByteArrayOutputStream
     withOutput(new PrintStream(bstream))(func)
     bstream.toString
   }
+
   def withOutput(out: PrintStream)(func: => Unit): Unit = {
     val oldStdOut = System.out
     val oldStdErr = System.err
@@ -39,6 +53,7 @@ trait FileDiffSuite extends Suite {
     fis.close()
     new String(buf)
   }
+
   def assertFileEqualsCheck(name: String): Unit = {
     assertResult(readFile(name + ".check")) { readFile(name) }
     new File(name) delete ()

@@ -2,7 +2,7 @@ package lms.util
 
 import lms._
 import lms.util._
-import lms.testutil.FileDiffSuite
+import lms.testutil.FileDiffSpec
 
 import scala.lms.common._
 import scala.reflect.SourceContext
@@ -98,11 +98,11 @@ trait EitherCPSProg
 
 }
 
-class EitherCPSSuite extends FileDiffSuite {
+class EitherCPSSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testEitherCPS = {
+  def `EitherCPS generate code with no diff` = {
     withOutFile(prefix + "eithercps") {
       new EitherCPSProg
           with EitherCPSExp

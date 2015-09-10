@@ -1,7 +1,7 @@
 package lms.util
 
 import lms._
-import lms.testutil.FileDiffSuite
+import lms.testutil.FileDiffSpec
 
 import scala.lms.common._
 import scala.lms.internal.Effects
@@ -25,11 +25,11 @@ trait EitherProg extends EitherOps with PrimitiveOps with NumericOps {
   }
 }
 
-class EitherOpsSuite extends FileDiffSuite {
+class EitherOpsSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testOption = {
+  def `EitherOps generate code with no diff` {
     withOutFile(prefix + "either") {
       new EitherProg
           with EitherOpsExpOpt

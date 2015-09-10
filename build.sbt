@@ -13,21 +13,29 @@ lazy val commonSettings = Seq(
     "-deprecation",
     "-feature",
     "-language:higherKinds",
-    "-language:implicitConversions"
+    "-language:implicitConversions",
+    "-language:postfixOps"
     //"-Yinline-warnings"
-  )
-)
+  ),
+
+  libraryDependencies ++= Seq(
+    "org.scala-lang.lms" %% "lms-core" % "1.0.0-SNAPSHOT",
+    "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
+  ),
+
+  resolvers += Resolver.sonatypeRepo("snapshots")
+
+) ++ publishSettings ++ publishableSettings
 
 lazy val root = (project in file(".")).
+  settings(packagedArtifacts := Map.empty).
+  aggregate(util, testutil)
+
+
+lazy val util = (project in file("util")).
   settings(commonSettings: _*).
   settings(
     name := "lms-utils",
-    libraryDependencies ++= Seq(
-      "org.scala-lang.lms" %% "lms-core" % "1.0.0-SNAPSHOT",
-      "org.scalatest" % "scalatest_2.11" % "2.2.2",
-      "org.scala-lang.plugins" % "scala-continuations-library_2.11" % "1.0.2"
-    ),
-    resolvers += Resolver.sonatypeRepo("snapshots"),
     /**
      * tests are not thread safe
      * this applies to all lms tests that write
@@ -35,8 +43,13 @@ lazy val root = (project in file(".")).
      */
     parallelExecution in Test := false
   ).
-  settings(publishSettings: _*).
-  settings(publishableSettings)
+  dependsOn(testutil % "test -> compile")
+
+lazy val testutil = (project in file("testutil")).
+  settings(commonSettings: _*).
+  settings(
+    name := "lms-testutils"
+  )
 
 /**
  * We are able to publish this thing!
@@ -116,8 +129,15 @@ lazy val publishableSettings = Seq(
           None
       }
     } else {
-      println("Failed to find settings file")
-      None
+      for {
+        realm <- sys.env.get("SCALAMETA_MAVEN_REALM")
+        domain <- sys.env.get("SCALAMETA_MAVEN_DOMAIN")
+        user <- sys.env.get("SCALAMETA_MAVEN_USER")
+        password <- sys.env.get("SCALAMETA_MAVEN_PASSWORD")
+      } yield {
+        println("Loading Sonatype credentials from environment variables")
+        Credentials(realm, domain, user, password)
+      }
     }
   }.toList
 )

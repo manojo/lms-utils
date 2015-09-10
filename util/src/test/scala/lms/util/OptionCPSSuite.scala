@@ -1,7 +1,7 @@
 package lms.util
 
 import lms._
-import lms.testutil.FileDiffSuite
+import lms.testutil.FileDiffSpec
 
 import scala.lms.common._
 import scala.reflect.SourceContext
@@ -10,10 +10,6 @@ import scala.lms.internal.GenericCodegen
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.FileOutputStream
-
-
-/** stupid feature import*/
-import scala.language.postfixOps
 
 trait OptionCPSProg
     extends OptionCPS
@@ -142,11 +138,11 @@ trait OptionCPSProg
 */
 }
 
-class OptionCPSSuite extends FileDiffSuite {
+class OptionCPSSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testOptionCPS = {
+  def `OptionCPS generate code with no diff` = {
     withOutFile(prefix + "optioncps") {
       new OptionCPSProg
           with OptionOpsExp
