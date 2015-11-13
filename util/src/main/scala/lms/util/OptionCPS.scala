@@ -21,6 +21,12 @@ trait OptionCPS
     with ZeroVal {
 
   /**
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
+   */
+  implicit def optioncps_typ[A: Typ]: Typ[OptionCPS[A]]
+
+  /**
    * CPS encoding for Option
    * isDefined does not make sense for this encoding
    */
@@ -156,4 +162,81 @@ trait OptionCPS
       elsep: => OptionCPS[T]
     ): OptionCPS[T] = OptionCPSCond(cond, thenp, elsep)
   }
+
+  /**
+   * Pimping my ride, now I have access to Rep[OptionCPS]
+   */
+  implicit class OptionCPSCls[A: Typ](opt: Rep[OptionCPS[A]]) {
+    def map[B: Typ](f: Rep[A] => Rep[B]): Rep[OptionCPS[B]] = optioncps_map(opt, f)
+
+    def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[A] => Rep[X]): Rep[X] =
+      optioncps_apply(opt, none, some)
+
+    /**
+     * for now we don't include other operations on optionCPS, we don't
+     * seem to need them
+     */
+  }
+
+  /**
+   * interface level functions
+   */
+  def mkSome[A: Typ](a: Rep[A]): Rep[OptionCPS[A]]
+  def mkNone[A: Typ]: Rep[OptionCPS[A]]
+
+  def optioncps_map[A: Typ, B: Typ](
+    opt: Rep[OptionCPS[A]],
+    f: Rep[A] => Rep[B]
+  ): Rep[OptionCPS[B]]
+
+  def optioncps_apply[A: Typ, X: Typ](
+    opt: Rep[OptionCPS[A]],
+    none: Rep[Unit] => Rep[X],
+    some: Rep[A] => Rep[X]
+  ): Rep[X]
 }
+
+trait OptionCPSExp
+    extends OptionCPS
+    with BaseExp
+    with IfThenElseExp
+    with BooleanOpsExp
+    with OptionOpsExp
+    with ZeroValExp {
+
+  import OptionCPS._
+
+  /**
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
+   */
+  implicit def optioncps_typ[A: Typ]: Typ[OptionCPS[A]] = {
+    implicit val ManifestTyp(mA) = typ[A]
+    manifestTyp
+  }
+
+  /**
+   * The wrapper acting as Rep[OptionCPS[A]]
+   */
+  case class OptionWrapper[A: Typ](e: OptionCPS[A]) extends Def[OptionCPS[A]]
+
+  def mkSome[A: Typ](a: Rep[A]): Rep[OptionCPS[A]] = OptionWrapper(Some(a))
+  def mkNone[A: Typ]: Rep[OptionCPS[A]] = OptionWrapper(None[A])
+
+  def optioncps_map[A: Typ, B: Typ](
+    opt: Rep[OptionCPS[A]],
+    f: Rep[A] => Rep[B]
+  ): Rep[OptionCPS[B]] = opt match {
+    case Def(OptionWrapper(opt)) => OptionWrapper(opt map f)
+  }
+
+  def optioncps_apply[A: Typ, X: Typ](
+    opt: Rep[OptionCPS[A]],
+    none: Rep[Unit] => Rep[X],
+    some: Rep[A] => Rep[X]
+  ): Rep[X] = opt match {
+    case Def(OptionWrapper(opt)) => opt(none, some)
+  }
+
+}
+

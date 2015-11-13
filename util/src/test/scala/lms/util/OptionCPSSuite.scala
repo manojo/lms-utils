@@ -145,7 +145,7 @@ class OptionCPSSuite extends FileDiffSpec {
   def `OptionCPS generate code with no diff` = {
     withOutFile(prefix + "optioncps") {
       new OptionCPSProg
-          with OptionOpsExp
+          with OptionCPSExp
           with OrderingOpsExpOpt
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
