@@ -155,7 +155,7 @@ trait EitherCPSExp
   }
 
   /**
-   * The wrapper acts as a Rep[EitherCPS[A, B]]
+   * The wrapper that acts as a `Rep[EitherCPS[A, B]]`
    */
   case class EitherWrapper[A, B](e: EitherCPS[A, B]) extends Def[EitherCPS[A, B]]
 
