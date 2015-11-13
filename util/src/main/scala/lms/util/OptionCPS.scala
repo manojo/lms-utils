@@ -194,6 +194,18 @@ trait OptionCPS
     none: Rep[Unit] => Rep[X],
     some: Rep[A] => Rep[X]
   ): Rep[X]
+
+  def option_conditional[A: Typ](
+    cond: Rep[Boolean],
+    thenp: => Rep[OptionCPS[A]],
+    elsep: => Rep[OptionCPS[A]]
+  ): Rep[OptionCPS[A]]
+
+  def __ifThenElse[A: Typ](
+    cond: Rep[Boolean],
+    thenp: => Rep[OptionCPS[A]],
+    elsep: => Rep[OptionCPS[A]]
+  ) = option_conditional(cond, thenp, elsep)
 }
 
 trait OptionCPSExp
@@ -238,5 +250,21 @@ trait OptionCPSExp
     case Def(OptionWrapper(opt)) => opt(none, some)
   }
 
+  /**
+   * a 'conditional' option
+   * lifts conditional expressions to Option level
+   *
+   * Note: this implementation works only because we are
+   * evaluating `thenp` and `elsep` here, and they are simple expressions
+   * If they are blocks, the pattern match will fail.
+   */
+  def option_conditional[A: Typ](
+    cond: Rep[Boolean],
+    thenp: => Rep[OptionCPS[A]],
+    elsep: => Rep[OptionCPS[A]]
+  ): Rep[OptionCPS[A]] = (thenp, elsep) match { //stricting them here
+    case (Def(OptionWrapper(t)), Def(OptionWrapper(e))) =>
+      OptionWrapper(OptionCPSCond(cond, t, e))
+  }
 }
 
