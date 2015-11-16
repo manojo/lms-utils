@@ -172,6 +172,9 @@ trait OptionCPS
     def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[A] => Rep[X]): Rep[X] =
       optioncps_apply(opt, none, some)
 
+    def flatMap[B: Typ](f: Rep[A] => OptionCPS[B]): Rep[OptionCPS[B]] =
+      optioncps_flatmap(opt, f)
+
     /**
      * for now we don't include other operations on optionCPS, we don't
      * seem to need them
@@ -194,6 +197,11 @@ trait OptionCPS
     none: Rep[Unit] => Rep[X],
     some: Rep[A] => Rep[X]
   ): Rep[X]
+
+  def optioncps_flatmap[A: Typ, B: Typ](
+    opt: Rep[OptionCPS[A]],
+    f: Rep[A] => OptionCPS[B]
+  ): Rep[OptionCPS[B]]
 
   def option_conditional[A: Typ](
     cond: Rep[Boolean],
@@ -240,6 +248,13 @@ trait OptionCPSExp
     f: Rep[A] => Rep[B]
   ): Rep[OptionCPS[B]] = opt match {
     case Def(OptionWrapper(opt)) => OptionWrapper(opt map f)
+  }
+
+  def optioncps_flatmap[A: Typ, B: Typ](
+    opt: Rep[OptionCPS[A]],
+    f: Rep[A] => OptionCPS[B]
+  ): Rep[OptionCPS[B]] = opt match {
+    case Def(OptionWrapper(opt)) => OptionWrapper(opt flatMap f)
   }
 
   def optioncps_apply[A: Typ, X: Typ](
