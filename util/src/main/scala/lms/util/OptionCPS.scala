@@ -178,6 +178,8 @@ trait OptionCPS
     def filter(p: Rep[A] => Rep[Boolean]): Rep[OptionCPS[A]] =
       optioncps_filter(opt, p)
 
+    def toOption: Rep[Option[A]] = optioncps_toOption(opt)
+
     /**
      * for now we don't include other operations on optionCPS, we don't
      * seem to need them
@@ -222,6 +224,10 @@ trait OptionCPS
     thenp: => Rep[OptionCPS[A]],
     elsep: => Rep[OptionCPS[A]]
   ) = option_conditional(cond, thenp, elsep)
+
+  def optioncps_toOption[A: Typ](
+    opt: Rep[OptionCPS[A]]
+  ): Rep[Option[A]]
 }
 
 trait OptionCPSExp
@@ -295,6 +301,12 @@ trait OptionCPSExp
   ): Rep[OptionCPS[A]] = (thenp, elsep) match { //stricting them here
     case (Def(OptionWrapper(t)), Def(OptionWrapper(e))) =>
       OptionWrapper(OptionCPSCond(cond, t, e))
+  }
+
+  def optioncps_toOption[A: Typ](
+    opt: Rep[OptionCPS[A]]
+  ): Rep[Option[A]] = opt match {
+    case Def(OptionWrapper(opt)) => opt.toOption
   }
 }
 
