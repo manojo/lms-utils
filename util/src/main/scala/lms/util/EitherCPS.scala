@@ -154,16 +154,11 @@ trait EitherCPSExp
     manifestTyp
   }
 
-  /**
-   * The wrapper that acts as a `Rep[EitherCPS[A, B]]`
-   */
-  case class EitherWrapper[A, B](e: EitherCPS[A, B]) extends Def[EitherCPS[A, B]]
-
   def mkLeft[A: Typ, B: Typ](a: Rep[A]): Rep[EitherCPS[A, B]] =
-    EitherWrapper(LeftCPS[A, B](a))
+    unit(LeftCPS[A, B](a))
 
   def mkRight[A: Typ, B: Typ](b: Rep[B]): Rep[EitherCPS[A, B]] =
-    EitherWrapper(RightCPS[A, B](b))
+    unit(RightCPS[A, B](b))
 
   /**
    * Both the functions below will misbehave if we have some other representation
@@ -176,7 +171,7 @@ trait EitherCPSExp
     lmap: Rep[A] => Rep[C],
     rmap: Rep[B] => Rep[D]
   ): Rep[EitherCPS[C, D]] = e match {
-    case Def(EitherWrapper(sth)) => EitherWrapper(sth map (lmap, rmap))
+    case Const(sth) => unit(sth map (lmap, rmap))
   }
 
   def either_apply[A: Typ, B: Typ, X: Typ](
@@ -184,7 +179,7 @@ trait EitherCPSExp
     lf: Rep[A] => Rep[X],
     rf: Rep[B] => Rep[X]
   ): Rep[X] = e match {
-    case Def(EitherWrapper(sth)) => sth.apply(lf, rf)
+    case Const(sth) => sth.apply(lf, rf)
   }
 
   /**
@@ -200,7 +195,6 @@ trait EitherCPSExp
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
   ): Rep[EitherCPS[A, B]] = (thenp, elsep) match { //stricting them here
-    case (Def(EitherWrapper(t)), Def(EitherWrapper(e))) =>
-      EitherWrapper(conditional(cond, t, e))
+    case (Const(t), Const(e)) => unit(conditional(cond, t, e))
   }
 }
