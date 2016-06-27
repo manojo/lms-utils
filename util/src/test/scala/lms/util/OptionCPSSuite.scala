@@ -13,7 +13,6 @@ import java.io.FileOutputStream
 
 trait OptionCPSProg
     extends OptionCPS
-    with OptionOps
     with OrderingOps
     with PrimitiveOps
     with NumericOps {
