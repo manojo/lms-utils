@@ -17,17 +17,18 @@ trait EitherOps
     with IfThenElse
     with BooleanOps
     with Equal
-    with ZeroVal {
+    /*with ZeroVal*/ {
 
   /**
    * implicits for creating Type Manifests
    * new boilerplate after the Manifest -> Typ change
    */
   implicit def either_typ[A: Typ, B: Typ]: Typ[Either[A, B]]
+  implicit def either_nul[A: Typ: Nul, B: Typ: Nul]: Nul[Either[A, B]]
 
-  implicit def make_either[A: Typ, B: Typ](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]]
+  implicit def make_either[A: Typ: Nul, B: Typ: Nul](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]]
 
-  implicit class EitherOpsCls[A: Typ, B: Typ](o: Rep[Either[A, B]]) {
+  implicit class EitherOpsCls[A: Typ: Nul, B: Typ: Nul](o: Rep[Either[A, B]]) {
 
     /**
      * the "pattern" match
@@ -37,7 +38,7 @@ trait EitherOps
     /**
      * map on Either
      */
-    def map[C: Typ, D: Typ](l: Rep[A] => Rep[C], r: Rep[B] => Rep[D]): Rep[Either[C, D]] =
+    def map[C: Typ: Nul, D: Typ: Nul](l: Rep[A] => Rep[C], r: Rep[B] => Rep[D]): Rep[Either[C, D]] =
       if (o.isLeft) left[C, D](l(o.getLeft)) else right[C, D](r(o.getRight))
 
     def getLeft: Rep[A] = struct_getLeft(o)
@@ -47,12 +48,12 @@ trait EitherOps
   /**
    * operations handled by the Exp world
    */
-  def left[A: Typ, B: Typ](a: Rep[A]): Rep[Either[A, B]]
-  def right[A: Typ, B: Typ](b: Rep[B]): Rep[Either[A, B]]
+  def left[A: Typ: Nul, B: Typ: Nul](a: Rep[A]): Rep[Either[A, B]]
+  def right[A: Typ: Nul, B: Typ: Nul](b: Rep[B]): Rep[Either[A, B]]
 
-  def struct_isLeft[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[Boolean]
-  def struct_getLeft[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[A]
-  def struct_getRight[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[B]
+  def struct_isLeft[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[Boolean]
+  def struct_getLeft[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[A]
+  def struct_getRight[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[B]
 
 }
 
@@ -61,9 +62,9 @@ trait EitherOpsExp
     with IfThenElseExp
     with BooleanOpsExp
     with StructExp
-    with CastingOpsExp
+    //with CastingOpsExp
     with EqualExp
-    with ZeroValExp {
+    /*with ZeroValExp*/ {
 
   /**
    * implicits for creating Type Manifests
@@ -75,30 +76,38 @@ trait EitherOpsExp
     manifestTyp
   }
 
-  implicit def make_either[A: Typ, B: Typ](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]] =
+  implicit def either_nul[A: Typ: Nul, B: Typ: Nul] = new Nul[Either[A, B]] {
+    def nullValue = unit(null.asInstanceOf[scala.Either[A, B]])
+    /**
+     * we are not interested in the underlying null instances here
+     */
+    def nlArguments = Nil
+  }
+
+  implicit def make_either[A: Typ: Nul, B: Typ: Nul](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]] =
     struct(classTag[Either[A, B]],
-      "left" -> o.left.getOrElse(unit(zeroVal[A])),
-      "right" -> o.right.getOrElse(unit(zeroVal[B])),
+      "left" -> o.left.getOrElse(zeroVal[A]),
+      "right" -> o.right.getOrElse(zeroVal[B]),
       "isLeft" -> unit(o match { case Left(_) => true; case _ => false })
     )
 
-  def left[A: Typ, B: Typ](a: Rep[A]): Rep[Either[A, B]] =
+  def left[A: Typ: Nul, B: Typ: Nul](a: Rep[A]): Rep[Either[A, B]] =
     struct(classTag[Either[A, B]],
       "left" -> a,
-      "right" -> unit(zeroVal[B]),
+      "right" -> zeroVal[B],
       "isLeft" -> unit(true)
     )
 
-  def right[A: Typ, B: Typ](b: Rep[B]): Rep[Either[A, B]] =
+  def right[A: Typ: Nul, B: Typ: Nul](b: Rep[B]): Rep[Either[A, B]] =
     struct(classTag[Either[A, B]],
-      "left" -> unit(zeroVal[A]),
+      "left" -> zeroVal[A],
       "right" -> b,
       "isLeft" -> unit(false)
     )
 
-  def struct_isLeft[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[Boolean] = field[Boolean](e, "isLeft")
-  def struct_getLeft[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[A] = field[A](e, "left")
-  def struct_getRight[A: Typ, B: Typ](e: Rep[Either[A, B]]): Rep[B] = field[B](e, "right")
+  def struct_isLeft[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[Boolean] = field[Boolean](e, "isLeft")
+  def struct_getLeft[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[A] = field[A](e, "left")
+  def struct_getRight[A: Typ: Nul, B: Typ: Nul](e: Rep[Either[A, B]]): Rep[B] = field[B](e, "right")
 }
 
 trait EitherOpsExpOpt
@@ -119,8 +128,8 @@ trait EitherGenBase extends GenericCodegen with BaseGenStruct {
 }
 
 trait ScalaGenEitherOps extends ScalaGenBase with EitherGenBase with ScalaGenStruct
-  with ScalaGenCastingOps with ScalaGenEqual with ScalaGenIfThenElse { val IR: EitherOpsExp }
+  /*with ScalaGenCastingOps*/ with ScalaGenEqual with ScalaGenIfThenElse { val IR: EitherOpsExp }
 
-trait CGenEitherOps extends CGenBase with EitherGenBase with CGenStruct with CGenCastingOps
+trait CGenEitherOps extends CGenBase with EitherGenBase with CGenStruct //with CGenCastingOps
   with CGenEqual with CGenIfThenElse { val IR: EitherOpsExp }
 

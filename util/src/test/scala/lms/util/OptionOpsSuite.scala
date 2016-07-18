@@ -14,8 +14,7 @@ trait OptionProg
     extends OptionOps
     with PrimitiveOps
     with NumericOps
-    with OrderingOps
-    with ArrayOps {
+    with OrderingOps {
 
   //map
   def optionmapsome(in: Rep[Int]): Rep[Option[Int]] = {
@@ -148,18 +147,18 @@ class OptionOpsSuite extends FileDiffSpec {
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
           with OrderingOpsExp
-          with ArrayOpsExpOpt
+          //with ArrayOpsExpOpt
           with StructFatExpOptCommon
           with IfThenElseFatExp
-          /** this trait should be mixed in higher up */ with ArrayOpsExp
-          /** this trait should be mixed in higher up */ with SeqOpsExp
+          ///** this trait should be mixed in higher up */ with ArrayOpsExp
+          ///** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenOptionOps
           with ScalaGenPrimitiveOps
           with ScalaGenNumericOps
           with ScalaGenOrderingOps
-          with ScalaGenArrayOps
+          //with ScalaGenArrayOps
           with ScalaGenStruct
           with ScalaGenFatStruct
           with ScalaGenIfThenElseFat { val IR: self.type = self }

@@ -1,10 +1,10 @@
-package lms
+/*package lms
 
 import scala.lms.common._
 import scala.lms.internal._
 
 /**
- * @author Sandro Stucki
+ * @author Sandro Stucki, Manohar Jonnalagedda
  *
  * Generate a "zero" value for a given type.
  *
@@ -23,37 +23,73 @@ import scala.lms.internal._
  *
  * Update: implementation changed after the `Manifest` -> `Typ` migration
  * As `Typ` is defined in `Expressions`, `ZeroVal` needs to be part of the cake
+ *
+ * We mix in Primitive and Bool ops to inherit their implicit proofs of Typ[Int]
+ * and Typ[Bool]
  */
 
-trait ZeroVal extends Base {
-  def zeroVal[A: Typ]: A
+trait ZeroVal
+    extends Base
+    with PrimitiveOps
+    with BooleanOps {
+
+  type Nul[T]
+  def zeroVal[A: Typ: Nul]: Rep[A]
+
+  implicit def intNul: Nul[Int]
+  implicit def boolNul: Nul[Boolean]
 }
 
-trait ZeroValExp extends ZeroVal with Expressions {
+trait ZeroValExp
+    extends ZeroVal
+    with Expressions
+    with PrimitiveOpsExp
+    with BooleanOpsExp {
 
-  val BooleanC = classOf[Boolean]
-  val ByteC = classOf[Byte]
-  val CharC = classOf[Char]
-  val IntC = classOf[Int]
-  val LongC = classOf[Long]
-  val ShortC = classOf[Short]
-  val DoubleC = classOf[Double]
-  val FloatC = classOf[Float]
-  val UnitC = classOf[Unit]
-
-  def zeroVal[A: Typ]: A = {
-    val z: Any = typ[A].runtimeClass match {
-      case ByteC    => 0.toByte
-      case CharC    => 0.toChar
-      case IntC     => 0
-      case LongC    => 0L
-      case ShortC   => 0.toShort
-      case DoubleC  => 0.0
-      case FloatC   => (0.0).toFloat
-      case BooleanC => false
-      case UnitC    => ()
-      case _        => null
-    }
-    z.asInstanceOf[A]
+  abstract class Nul[A: Typ] {
+    def nullValue: Rep[A]
   }
+
+  def zeroVal[A: Typ: Nul]: Rep[A] = implicitly[Nul[A]].nullValue
+
+  implicit object IntNul extends Nul[Int] {
+    def nullValue = unit(0)
+  }
+
+  implicit object BooleanNul extends Nul[Boolean] {
+    def nullValue = unit(false)
+  }
+
+  implicit def intNul: Nul[Int] = IntNul
+  implicit def boolNul: Nul[Boolean] = BooleanNul
+
+
+//  implicit object ByteNul extends Nul[Byte] {
+//    def nullValue = unit(0.toByte)
+//  }
+//
+//  implicit object CharNul extends Nul[Char] {
+//    def nullValue = unit(0.toChar)
+//  }
+//
+//  implicit object LongNul extends Nul[Long] {
+//    def nullValue = unit(0L)
+//  }
+//
+//  implicit object ShortNul extends Nul[Short] {
+//    def nullValue = unit(0.toShort)
+//  }
+//
+//  implicit object DoubleNul extends Nul[Double] {
+//    def nullValue = unit(0.0)
+//  }
+//
+//  implicit object FloatNul extends Nul[Float] {
+//    def nullValue = unit((0.0).toFloat)
+//  }
+//
+//  implicit object UnitNul extends Nul[Unit] {
+//    def nullValue = unit(())
+//  }
 }
+*/

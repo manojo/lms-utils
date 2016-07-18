@@ -19,7 +19,7 @@ lazy val commonSettings = Seq(
   ),
 
   libraryDependencies ++= Seq(
-    "org.scala-lang.lms" %% "lms-core" % "1.0.0-SNAPSHOT",
+    "com.github.manojo" %% "lms" % "0.1-SNAPSHOT",
     "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
   ),
 

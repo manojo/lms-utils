@@ -8,27 +8,29 @@ var x3: Int = 0
 var x4: Int = 0
 var x5: Boolean = true
 val x2 = x0 <= 3
-val x12 = if (x2) {
+val x15 = if (x2) {
 x3 = 2
+x4 = 0
 x5 = true
 ()
 } else {
+x3 = 0
 x4 = 4
 x5 = false
 ()
 }
-val x13 = x5
-val x20 = if (x13) {
-val x14 = x3
-x1 = x14
+val x16 = x3
+val x17 = x4
+val x18 = x5
+val x23 = if (x18) {
+x1 = x16
 ()
 } else {
-val x17 = x4
 x1 = x17
 ()
 }
-val x21 = x1
-x21
+val x24 = x1
+x24
 }
 }
 /*****************************************
@@ -36,44 +38,7 @@ x21
 *******************************************/
 compilation: ok
 4
-/*****************************************
-  Emitting Generated Code                  
-*******************************************/
-class singleConditionalBis extends ((Int)=>(Int)) {
-def apply(x0:Int): Int = {
-var x1: Int = 0
-var x3: Int = 0
-var x4: Int = 0
-var x5: Boolean = true
-val x2 = x0 <= 3
-val x12 = if (x2) {
-x3 = 2
-x5 = true
-()
-} else {
-x4 = 4
-x5 = false
-()
-}
-val x13 = x5
-val x20 = if (x13) {
-val x14 = x3
-x1 = x14
-()
-} else {
-val x17 = x4
-x1 = x17
-()
-}
-val x21 = x1
-x21
-}
-}
-/*****************************************
-  End of Generated Code                  
-*******************************************/
-compilation: ok
-4
+2
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
@@ -84,50 +49,55 @@ var x4: Int = 0
 var x5: Int = 0
 var x6: Boolean = true
 val x2 = x0 <= 3
-val x31 = if (x2) {
-var x7: Int = 0
+val x38 = if (x2) {
 var x8: Int = 0
-var x9: Boolean = true
+var x9: Int = 0
+var x10: Boolean = true
 val x3 = x0 >= 1
-val x16 = if (x3) {
-x7 = 2
-x9 = true
+val x20 = if (x3) {
+x8 = 2
+x9 = 0
+x10 = true
 ()
 } else {
-x8 = 3
-x9 = false
+x8 = 0
+x9 = 3
+x10 = false
 ()
 }
-val x17 = x9
-val x26 = if (x17) {
-val x18 = x7
-x4 = x18
+val x21 = x8
+val x22 = x9
+val x23 = x10
+val x32 = if (x23) {
+x4 = x21
+x5 = 0
 x6 = true
 ()
 } else {
-val x22 = x8
+x4 = 0
 x5 = x22
 x6 = false
 ()
 }
-x26
+x32
 } else {
+x4 = 0
 x5 = 4
 x6 = false
 ()
 }
-val x32 = x6
-val x39 = if (x32) {
-val x33 = x4
-x1 = x33
+val x39 = x4
+val x40 = x5
+val x41 = x6
+val x46 = if (x41) {
+x1 = x39
 ()
 } else {
-val x36 = x5
-x1 = x36
+x1 = x40
 ()
 }
-val x40 = x1
-x40
+val x47 = x1
+x47
 }
 }
 /*****************************************
@@ -135,64 +105,5 @@ x40
 *******************************************/
 compilation: ok
 4
-/*****************************************
-  Emitting Generated Code                  
-*******************************************/
-class nestedConditionalBis extends ((Int)=>(Int)) {
-def apply(x0:Int): Int = {
-var x1: Int = 0
-var x4: Int = 0
-var x5: Int = 0
-var x6: Boolean = true
-val x2 = x0 <= 3
-val x31 = if (x2) {
-var x7: Int = 0
-var x8: Int = 0
-var x9: Boolean = true
-val x3 = x0 >= 1
-val x16 = if (x3) {
-x7 = 2
-x9 = true
-()
-} else {
-x8 = 3
-x9 = false
-()
-}
-val x17 = x9
-val x26 = if (x17) {
-val x18 = x7
-x4 = x18
-x6 = true
-()
-} else {
-val x22 = x8
-x5 = x22
-x6 = false
-()
-}
-x26
-} else {
-x5 = 4
-x6 = false
-()
-}
-val x32 = x6
-val x39 = if (x32) {
-val x33 = x4
-x1 = x33
-()
-} else {
-val x36 = x5
-x1 = x36
-()
-}
-val x40 = x1
-x40
-}
-}
-/*****************************************
-  End of Generated Code                  
-*******************************************/
-compilation: ok
-4
+2
+3

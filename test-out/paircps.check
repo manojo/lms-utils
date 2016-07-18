@@ -1,24 +1,49 @@
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
+class varPairCPS extends ((Int)=>(Tuple2IntInt)) {
+def apply(x0:Int): Tuple2IntInt = {
+var x3: Int = x0
+val x1 = x0 + 1
+var x4: Int = x1
+val x6 = x3
+val x7 = x4
+val x10 = x6 + 3
+x3 = x10
+val x11 = x7 + 2
+x4 = x11
+val x14 = x3
+val x15 = x4
+val x17 = new Tuple2IntInt(x14,x15)
+x17
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+Tuple2IntInt(8,8)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
 class singleConditional extends ((Int)=>(Tuple2IntInt)) {
 def apply(x0:Int): Tuple2IntInt = {
-var x2: Int = 0
 var x3: Int = 0
+var x4: Int = 0
 val x1 = x0 <= 3
-val x10 = if (x1) {
-x2 = x0
-x3 = 2
+val x13 = if (x1) {
+x3 = x0
+x4 = 2
 ()
 } else {
-x2 = 0
 x3 = 0
+x4 = 0
 ()
 }
-val x11 = x2
-val x12 = x3
-val x13 = new Tuple2IntInt(x11,x12)
-x13
+val x14 = x3
+val x15 = x4
+val x17 = new Tuple2IntInt(x14,x15)
+x17
 }
 }
 /*****************************************
@@ -26,59 +51,60 @@ x13
 *******************************************/
 compilation: ok
 Tuple2IntInt(0,0)
+Tuple2IntInt(2,2)
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
 class nestedConditional extends ((Int)=>(Tuple2IntInt)) {
 def apply(x0:Int): Tuple2IntInt = {
-var x2: Int = 0
 var x3: Int = 0
+var x4: Int = 0
 val x1 = x0 <= 3
-val x37 = if (x1) {
-var x5: Int = 0
-var x6: Int = 0
-val x4 = x0 >= 1
-val x15 = if (x4) {
-x5 = x0
-val x7 = x0 + 1
-x6 = x7
+val x47 = if (x1) {
+var x7: Int = 0
+var x8: Int = 0
+val x6 = x0 >= 1
+val x20 = if (x6) {
+x7 = x0
+val x10 = x0 + 1
+x8 = x10
 ()
 } else {
-val x11 = x0 + 2
-x5 = x11
-x6 = x0
+val x15 = x0 + 2
+x7 = x15
+x8 = x0
 ()
 }
-val x16 = x5
-val x17 = x6
-x2 = x16
-x3 = x17
+val x21 = x7
+val x22 = x8
+x3 = x21
+x4 = x22
 ()
 } else {
-var x22: Int = 0
-var x23: Int = 0
-val x21 = x0 >= 5
-val x31 = if (x21) {
-x22 = x0
-val x11 = x0 + 2
-x23 = x11
+var x28: Int = 0
+var x29: Int = 0
+val x27 = x0 >= 5
+val x40 = if (x27) {
+x28 = x0
+val x15 = x0 + 2
+x29 = x15
 ()
 } else {
-val x27 = x0 + 3
-x22 = x27
-x23 = x0
+val x35 = x0 + 3
+x28 = x35
+x29 = x0
 ()
 }
-val x32 = x22
-val x33 = x23
-x2 = x32
-x3 = x33
+val x41 = x28
+val x42 = x29
+x3 = x41
+x4 = x42
 ()
 }
-val x38 = x2
-val x39 = x3
-val x40 = new Tuple2IntInt(x38,x39)
-x40
+val x48 = x3
+val x49 = x4
+val x51 = new Tuple2IntInt(x48,x49)
+x51
 }
 }
 /*****************************************
@@ -86,6 +112,9 @@ x40
 *******************************************/
 compilation: ok
 Tuple2IntInt(5,7)
+Tuple2IntInt(7,4)
+Tuple2IntInt(2,0)
+Tuple2IntInt(3,4)
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
@@ -103,3 +132,121 @@ x4
 *******************************************/
 compilation: ok
 Tuple2IntInt(10,9)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedPairs extends ((Int)=>(Tuple2Tuple2IntIntInt)) {
+def apply(x0:Int): Tuple2Tuple2IntIntInt = {
+val x3 = x0 + 2
+val x1 = x0 + 1
+val x6 = new Tuple2IntInt(x0,x1)
+val x7 = new Tuple2Tuple2IntIntInt(x6,x3)
+x7
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+Tuple2Tuple2IntIntInt(Tuple2IntInt(5,6),7)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedPairConditional extends ((Int)=>(Tuple2IntInt)) {
+def apply(x0:Int): Tuple2IntInt = {
+var x4: Int = 0
+var x5: Int = 0
+var x7: Int = 0
+val x1 = x0 <= 5
+val x23 = if (x1) {
+x4 = x0
+val x9 = x0 + 2
+x5 = x9
+x7 = 3
+()
+} else {
+x4 = x0
+val x16 = x0 + 1
+x5 = x16
+x7 = 3
+()
+}
+val x24 = x4
+val x25 = x5
+val x27 = x7
+val x29 = x24 + x25
+val x30 = new Tuple2IntInt(x29,x27)
+x30
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+Tuple2IntInt(12,3)
+Tuple2IntInt(8,3)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedPairsWhile extends ((Int, Int)=>(Int)) {
+def apply(x0:Int, x1:Int): Int = {
+var x2: Int = x0
+var x3: Int = x1
+var x4: Int = 0
+var x5: Boolean = false
+var x6: Int = 0
+val x51 = while ({val x7 = x2
+val x9 = x5
+val x12 = x3
+val x8 = x7 > 5
+val x10 = !x9
+val x11 = x8 && x10
+val x13 = x12 > 5
+val x14 = x11 || x13
+val x15 = !x14
+x15}) {
+var x17: Boolean = false
+var x19: Int = 0
+var x20: Int = 0
+val x22 = x5
+val x39 = if (x22) {
+val x23 = x6
+val x24 = x3
+x19 = x23
+x20 = x24
+val x28 = x24 + 1
+x3 = x28
+x17 = true
+x5 = false
+()
+} else {
+val x33 = x2
+x6 = x33
+val x35 = x33 + 1
+x2 = x35
+x5 = true
+()
+}
+val x40 = x17
+val x49 = if (x40) {
+val x41 = x4
+val x42 = x19
+val x43 = x20
+val x45 = x42 + x43
+val x46 = x41 + x45
+x4 = x46
+()
+} else {
+()
+}
+x49
+}
+val x52 = x4
+x52
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+30

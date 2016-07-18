@@ -17,36 +17,37 @@ trait OptionOps
     with IfThenElse
     with BooleanOps
     with Equal
-    with ZeroVal {
+    /*with ZeroVal*/ {
 
   /**
    * implicits for creating Type Manifests
    * new boilerplate after the Manifest -> Typ change
    */
   implicit def option_typ[A: Typ]: Typ[Option[A]]
+  implicit def option_nul[A: Typ: Nul]: Nul[Option[A]]
 
-  implicit def make_opt[A: Typ](o: Option[Rep[A]])(implicit pos: SourceContext): Rep[Option[A]]
+  implicit def make_opt[A: Typ: Nul](o: Option[Rep[A]])(implicit pos: SourceContext): Rep[Option[A]]
 
-  def none[T: Typ](): Rep[Option[T]]
+  def none[T: Typ: Nul](): Rep[Option[T]]
 
-  implicit class OptionOpsCls[A: Typ](o: Rep[Option[A]]) {
-    def map[B: Typ](f: Rep[A] => Rep[B]) = option_map(o, f)
+  implicit class OptionOpsCls[A: Typ: Nul](o: Rep[Option[A]]) {
+    def map[B: Typ: Nul](f: Rep[A] => Rep[B]) = option_map(o, f)
     def isDefined: Rep[Boolean] = option_isDefined(o)
     def get: Rep[A] = option_get(o)
-    def flatMap[B: Typ](f: Rep[A] => Rep[Option[B]]) = option_flatMap(o, f)
+    def flatMap[B: Typ: Nul](f: Rep[A] => Rep[Option[B]]) = option_flatMap(o, f)
     def filter(f: Rep[A] => Rep[Boolean]) = option_filter(o, f)
   }
 
-  def option_isDefined[A: Typ](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[Boolean]
-  def option_get[A: Typ](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[A]
+  def option_isDefined[A: Typ: Nul](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[Boolean]
+  def option_get[A: Typ: Nul](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[A]
 
-  def option_map[A: Typ, B: Typ](o: Rep[Option[A]], f: Rep[A] => Rep[B]): Rep[Option[B]] =
+  def option_map[A: Typ: Nul, B: Typ: Nul](o: Rep[Option[A]], f: Rep[A] => Rep[B]): Rep[Option[B]] =
     if (o.isDefined) Some(f(o.get)) else None.asInstanceOf[Option[Rep[B]]]
 
-  def option_flatMap[A: Typ, B: Typ](o: Rep[Option[A]], f: Rep[A] => Rep[Option[B]]): Rep[Option[B]] =
+  def option_flatMap[A: Typ: Nul, B: Typ: Nul](o: Rep[Option[A]], f: Rep[A] => Rep[Option[B]]): Rep[Option[B]] =
     if (o.isDefined) f(o.get) else None.asInstanceOf[Option[Rep[B]]]
 
-  def option_filter[A: Typ](o: Rep[Option[A]], p: Rep[A] => Rep[Boolean]): Rep[Option[A]] =
+  def option_filter[A: Typ: Nul](o: Rep[Option[A]], p: Rep[A] => Rep[Boolean]): Rep[Option[A]] =
     if (o.isDefined && p(o.get)) o else None.asInstanceOf[Option[Rep[A]]]
 
 }
@@ -61,8 +62,8 @@ trait OptionOpsExp
     with BooleanOpsExp
     with StructExp
     with EqualExp
-    with CastingOpsExp
-    with ZeroValExp {
+    //with CastingOpsExp
+    /* with ZeroValExp*/ {
 
   /**
    * implicits for creating Type Manifests
@@ -73,17 +74,25 @@ trait OptionOpsExp
     manifestTyp
   }
 
-  implicit def make_opt[A: Typ](o: Option[Rep[A]])(implicit pos: SourceContext): Exp[Option[A]] =
+  implicit def option_nul[A: Typ: Nul] = new Nul[Option[A]] {
+    def nullValue = none[A]()
+    /**
+     * we are not interested in the underlying null instances here
+     */
+    def nlArguments = Nil
+  }
+
+  implicit def make_opt[A: Typ: Nul](o: Option[Rep[A]])(implicit pos: SourceContext): Exp[Option[A]] =
     struct(classTag[Option[A]],
-      "value" -> o.getOrElse(unit(zeroVal[A])),
+      "value" -> o.getOrElse(zeroVal[A]),
       "defined" -> unit(o.isDefined)
     )
 
-  def option_isDefined[A: Typ](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[Boolean] = field[Boolean](o, "defined")
-  def option_get[A: Typ](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[A] = field[A](o, "value")
+  def option_isDefined[A: Typ: Nul](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[Boolean] = field[Boolean](o, "defined")
+  def option_get[A: Typ: Nul](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[A] = field[A](o, "value")
 
-  def none[T: Typ](): Rep[Option[T]] =
-    struct(classTag[Option[T]], "value" -> unit(zeroVal[T]), "defined" -> unit(false))
+  def none[T: Typ: Nul](): Rep[Option[T]] =
+    struct(classTag[Option[T]], "value" -> zeroVal[T], "defined" -> unit(false))
 }
 
 trait OptionGenBase extends GenericCodegen with BaseGenStruct {
@@ -107,7 +116,7 @@ trait ScalaGenOptionOps
     extends ScalaGenBase
     with OptionGenBase
     with ScalaGenStruct
-    with ScalaGenCastingOps
+    //with ScalaGenCastingOps
     with ScalaGenIfThenElse
     with ScalaGenEqual
     with ScalaGenBooleanOps {
@@ -118,7 +127,7 @@ trait CGenOptionOps
     extends CGenBase
     with OptionGenBase
     with CGenStruct
-    with CGenCastingOps
+    //with CGenCastingOps
     with CGenIfThenElse
     with CGenEqual
     with CGenBooleanOps {

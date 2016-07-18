@@ -1,4 +1,4 @@
-package lms.util
+/*package lms.util
 
 import lms._
 import lms.testutil.FileDiffSpec
@@ -36,8 +36,8 @@ class EitherOpsSuite extends FileDiffSpec {
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
           with StructExpOptCommon
-          /** this trait should be mixed in higher up */ with ArrayOpsExp
-          /** this trait should be mixed in higher up */ with SeqOpsExp
+          ///** this trait should be mixed in higher up */ with ArrayOpsExp
+          ///** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenEitherOps with ScalaGenPrimitiveOps
@@ -63,3 +63,4 @@ class EitherOpsSuite extends FileDiffSpec {
     assertFileEqualsCheck(prefix + "either")
   }
 }
+*/

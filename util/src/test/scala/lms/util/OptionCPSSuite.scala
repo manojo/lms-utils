@@ -15,7 +15,8 @@ trait OptionCPSProg
     extends OptionCPS
     with OrderingOps
     with PrimitiveOps
-    with NumericOps {
+    with NumericOps
+    with While {
 
   import OptionCPS._
 
@@ -123,18 +124,78 @@ trait OptionCPSProg
     } toOption
   }
 
-
-/*
-  def filtersome(in: Rep[Int]): Rep[Option[Int]] = {
-    val s: Rep[Option[Int]] = mkSome(in)
-    s.filter(x => x == unit(3)).toOption
+  /**
+   * tests whether overriding var_new and var_assign actually worked
+   */
+  def varOptionCPS(in: Rep[Int]): Rep[Option[Int]] = {
+    var opt = mkSome(in)
+    opt = readVar(opt) map (_ + 1)
+    readVar(opt).toOption
   }
 
-  def filternone(in: Rep[Int]): Rep[Option[Int]] = {
-    val s = mkNone[Int]
-    s.filter(x => x == unit(2)).toOption
+  /**
+   * nested OptionCPS conversion to Option
+   */
+  def nestedOptionCPSToOption(in: Rep[Int]): Rep[Option[Option[Int]]] = {
+    val opt = mkSome(mkSome(in))
+    val optioned: Rep[OptionCPS[Option[Int]]] = opt.map(x => x.toOption)
+    optioned.toOption
+
   }
-*/
+
+  /**
+   * nested zeroVal
+   */
+  def nestedZeroVal(in: Rep[Int]): Rep[Option[Option[Int]]] = {
+    val opt = zeroVal[OptionCPS[OptionCPS[Int]]]
+    opt.map(_.toOption).toOption
+  }
+
+  /**
+   * tests whether overriding var_new and var_assign actually worked
+   */
+  def nestedVarOptionCPS(in: Rep[Int]): Rep[Option[Option[Int]]] = {
+    var opt = mkSome(mkSome(in))
+    readVar(opt).map(_.toOption).toOption
+  }
+
+  /**
+   * tests whether overriding var_new and var_assign actually worked
+   */
+  def nestedVarOptionCPSAssign(in: Rep[Int]): Rep[Option[Option[Int]]] = {
+    var opt = mkSome(mkSome(in))
+    opt = mkSome(mkSome(in + 1))
+    readVar(opt).map(_.toOption).toOption
+  }
+
+  /**
+   * Option in an Option
+   */
+  def nestedOptionCPS(in: Rep[Int]): Rep[Option[Option[Int]]] = {
+
+    val nestedOpt = option_conditional(in <= unit(3),
+      mkSome(mkSome(in)),
+      mkSome(mkSome(in + unit(1)))
+    )
+    nestedOpt.map(_.toOption).toOption
+  }
+
+  /**
+   * var in a while
+   */
+  def varOptionCPSWhile(in: Rep[Int]): Rep[Option[Int]] = {
+    var opt = mkNone[Int]
+    var i = 0
+
+    while (i < in) {
+      val bla = readVar(opt).map(_ * 2)
+      opt = bla
+      i = i + 1
+    }
+
+    readVar(opt).toOption
+  }
+
 }
 
 class OptionCPSSuite extends FileDiffSpec {
@@ -148,11 +209,14 @@ class OptionCPSSuite extends FileDiffSpec {
           with OrderingOpsExpOpt
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
-          /** this trait should be mixed in higher up */ with ArrayOpsExp
-          /** this trait should be mixed in higher up */ with SeqOpsExp
+          with ImplicitOpsExp
+          with WhileExp
+          ///** this trait should be mixed in higher up */ with ArrayOpsExp
+          ///** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenBase
+            with OptionCPSGenBase
             with ScalaGenIfThenElse
             with ScalaGenBooleanOps
             with ScalaGenOrderingOps
@@ -160,13 +224,18 @@ class OptionCPSSuite extends FileDiffSpec {
             with ScalaGenVariables
             with ScalaGenOptionOps
             with ScalaGenPrimitiveOps
-            with ScalaGenNumericOps { val IR: self.type = self }
+            with ScalaGenNumericOps
+            with ScalaGenWhile {
+
+          val IR: self.type = self
+        }
 
         codegen.emitSource(singleConditional _, "singleConditional", new java.io.PrintWriter(System.out))
         codegen.reset
 
         val testcSingleConditional = compile(singleConditional)
         scala.Console.println(testcSingleConditional(5))
+        scala.Console.println(testcSingleConditional(2))
         codegen.reset
 
         codegen.emitSource(nestedConditional _, "nestedConditional", new java.io.PrintWriter(System.out))
@@ -240,6 +309,55 @@ class OptionCPSSuite extends FileDiffSpec {
         scala.Console.println(testcFlatMapConditional(3))
         scala.Console.println(testcFlatMapConditional(0))
         codegen.reset
+
+        codegen.emitSource(varOptionCPS _, "varOptionCPS", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcVarOptionCPS = compile(varOptionCPS)
+        scala.Console.println(testcVarOptionCPS(5))
+        codegen.reset
+
+        codegen.emitSource(nestedOptionCPSToOption _, "nestedOptionCPSToOption", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedOptionCPSToOption = compile(nestedOptionCPSToOption)
+        scala.Console.println(testcNestedOptionCPSToOption(5))
+        codegen.reset
+
+        codegen.emitSource(nestedZeroVal _, "nestedZeroVal", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedZeroVal = compile(nestedZeroVal)
+        scala.Console.println(testcNestedZeroVal(5))
+        codegen.reset
+
+        codegen.emitSource(nestedVarOptionCPS _, "nestedVarOptionCPS", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedVarOptionCPS = compile(nestedVarOptionCPS)
+        scala.Console.println(testcNestedVarOptionCPS(5))
+        codegen.reset
+
+        codegen.emitSource(nestedVarOptionCPSAssign _, "nestedVarOptionCPSAssign", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedVarOptionCPSAssign = compile(nestedVarOptionCPSAssign)
+        scala.Console.println(testcNestedVarOptionCPSAssign(5))
+        codegen.reset
+
+        codegen.emitSource(nestedOptionCPS _, "nestedOptionCPS", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedOptionCPS = compile(nestedOptionCPS)
+        scala.Console.println(testcNestedOptionCPS(5))
+        codegen.reset
+
+//        codegen.emitSource(varOptionCPSWhile _, "varOptionCPSWhile", new java.io.PrintWriter(System.out))
+//        codegen.reset
+//
+//        val testcVarOptionCPSWhile = compile(varOptionCPSWhile)
+//        scala.Console.println(testcVarOptionCPSWhile(6))
+//        codegen.reset
 
 
       }
